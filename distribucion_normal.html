@@ -1,0 +1,1069 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Distribución Normal - Estadística</title>
+
+<style>
+:root {
+  --azul: #284967;
+  --turquesa: #55c2c4;
+  --fondo: #edf5f6;
+  --texto: #19384d;
+  --amarillo: #f2d36b;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: var(--fondo);
+  color: var(--texto);
+  line-height: 1.6;
+}
+
+header {
+  background: var(--azul);
+  color: white;
+  text-align: center;
+  padding: 35px 15px;
+}
+
+header h1 {
+  margin: 0;
+  font-size: 32px;
+}
+
+nav {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  background: #19384d;
+  padding: 14px;
+}
+
+nav a {
+  color: white;
+  text-decoration: none;
+  padding: 8px 14px;
+  border-radius: 6px;
+}
+
+nav a:hover {
+  background: #3b6987;
+}
+
+main {
+  max-width: 1100px;
+  margin: auto;
+  padding: 25px 15px;
+}
+
+section {
+  background: white;
+  padding: 25px;
+  margin-bottom: 25px;
+  border-radius: 12px;
+  box-shadow: 0 3px 12px #00000012;
+}
+
+h2 {
+  color: var(--azul);
+  border-bottom: 3px solid var(--amarillo);
+  padding-bottom: 8px;
+}
+
+h3 {
+  color: #245b72;
+}
+
+.metodologia {
+  background: var(--turquesa);
+  color: #103b48;
+}
+
+.metodologia h2 {
+  color: white;
+}
+
+.metodologia li {
+  margin-bottom: 10px;
+  font-weight: bold;
+}
+
+.formula {
+  background: #e8f5f5;
+  border-left: 5px solid var(--turquesa);
+  padding: 15px;
+  margin: 15px 0;
+  text-align: center;
+  font-size: 21px;
+  overflow-x: auto;
+}
+
+.datos {
+  background: #e8f5f5;
+  padding: 15px;
+  border-radius: 8px;
+}
+
+.paso {
+  border-left: 4px solid var(--azul);
+  padding-left: 15px;
+  margin: 20px 0;
+}
+
+.resultado {
+  background: #d9f4e7;
+  padding: 15px;
+  border-radius: 8px;
+  font-weight: bold;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+label {
+  display: block;
+  font-weight: bold;
+  margin-top: 12px;
+}
+
+input, select {
+  width: 100%;
+  padding: 11px;
+  border: 1px solid #aabdc5;
+  border-radius: 6px;
+  margin-top: 5px;
+  font-size: 16px;
+}
+
+button {
+  background: var(--azul);
+  color: white;
+  padding: 12px 22px;
+  border: none;
+  border-radius: 7px;
+  cursor: pointer;
+  margin-top: 15px;
+  font-size: 16px;
+}
+
+button:hover {
+  background: #386f91;
+}
+
+canvas {
+  width: 100%;
+  max-width: 800px;
+  border: 1px solid #d5e4e8;
+  border-radius: 8px;
+  background: white;
+  display: block;
+  margin: 20px auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+th {
+  background: #608fc0;
+  color: white;
+}
+
+td, th {
+  border: 1px solid #c9d4df;
+  padding: 12px;
+  text-align: left;
+}
+
+tr:nth-child(even) {
+  background: #eef3f8;
+}
+
+footer {
+  background: var(--azul);
+  color: white;
+  text-align: center;
+  padding: 20px;
+}
+
+@media(max-width: 700px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+
+  header h1 {
+    font-size: 25px;
+  }
+
+  section {
+    padding: 16px;
+  }
+}
+
+@media print {
+  nav, button, .no-imprimir {
+    display: none;
+  }
+
+  body {
+    background: white;
+  }
+
+  section {
+    box-shadow: none;
+    break-inside: avoid;
+  }
+}
+</style>
+
+<!-- Renderizado de fórmulas matemáticas -->
+<script>
+window.MathJax = {
+  tex: {
+    inlineMath: [['\\(', '\\)']],
+    displayMath: [['\\[', '\\]']]
+  }
+};
+</script>
+
+<script defer
+src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+</script>
+
+</head>
+
+<body>
+
+<header>
+  <h1>Distribución Normal y Distribución de Muestreo</h1>
+  <p>Guía de estudio y preparación para el examen parcial</p>
+</header>
+
+<nav>
+  <a href="#metodologia">Metodología</a>
+  <a href="#formulas">Fórmulas</a>
+  <a href="#ejemplo1">Normal</a>
+  <a href="#ejemplo2">Muestreo</a>
+  <a href="#calculadora">Calculadora</a>
+  <a href="#evaluacion">Evaluación</a>
+</nav>
+
+<main>
+
+<!-- METODOLOGÍA -->
+
+<section id="metodologia" class="metodologia">
+
+<h2>Metodología para resolver ejercicios</h2>
+
+<ol>
+  <li>Identificar los datos.</li>
+  <li>Dibujar la campana normal con las medidas correctas.</li>
+  <li>Marcar los límites y sombrear la probabilidad.</li>
+  <li>Escribir la fórmula.</li>
+  <li>Realizar la sustitución.</li>
+  <li>Presentar el resultado Z con dos decimales.</li>
+  <li>Representar la probabilidad con cuatro decimales.</li>
+  <li>Redactar la respuesta en porcentaje con dos decimales.</li>
+</ol>
+
+</section>
+
+<!-- FÓRMULAS -->
+
+<section id="formulas">
+
+<h2>Formulario</h2>
+
+<h3>1. Distribución normal</h3>
+
+<div class="formula">
+\[
+Z=\frac{x-\mu}{\sigma}
+\]
+</div>
+
+<p>
+Donde:
+</p>
+
+<ul>
+  <li>\(x\): valor de la variable.</li>
+  <li>\(\mu\): media poblacional.</li>
+  <li>\(\sigma\): desviación estándar poblacional.</li>
+  <li>\(Z\): valor estandarizado.</li>
+</ul>
+
+<h3>2. Distribución de muestreo</h3>
+
+<p>Error estándar de la media:</p>
+
+<div class="formula">
+\[
+\sigma_{\bar X}=\frac{\sigma}{\sqrt{n}}
+\]
+</div>
+
+<p>Estandarización:</p>
+
+<div class="formula">
+\[
+Z=\frac{\bar X-\mu}{\sigma_{\bar X}}
+\]
+</div>
+
+<p>
+Estas expresiones corresponden al muestreo de una
+población normal o a una aproximación normal
+adecuada de la media muestral.
+</p>
+
+</section>
+
+<!-- EJEMPLO NORMAL -->
+
+<section id="ejemplo1">
+
+<h2>Ejemplo 1. Distribución normal</h2>
+
+<p>
+El tiempo que tardan unos autores en completar
+un proceso sigue una distribución normal,
+con media de 11 meses y desviación estándar
+de 2,4 meses.
+</p>
+
+<p>
+Determine la probabilidad de completar
+el proceso en menos de 12 meses.
+</p>
+
+<div class="paso">
+<h3>1. Datos</h3>
+
+\[
+\mu=11
+\]
+
+\[
+\sigma=2,4
+\]
+
+\[
+x<12
+\]
+</div>
+
+<div class="paso">
+<h3>2. Representación gráfica</h3>
+<canvas id="grafica1" width="800" height="360"></canvas>
+</div>
+
+<div class="paso">
+<h3>3. Fórmula</h3>
+
+\[
+Z=\frac{x-\mu}{\sigma}
+\]
+</div>
+
+<div class="paso">
+<h3>4. Sustitución</h3>
+
+\[
+Z=\frac{12-11}{2,4}
+\]
+
+\[
+Z=0,416666\ldots
+\]
+
+\[
+\boxed{Z=0,42}
+\]
+</div>
+
+<div class="paso">
+<h3>5. Probabilidad</h3>
+
+\[
+P(X<12)
+\]
+
+\[
+P(Z<0,42)=0,6628
+\]
+</div>
+
+<div class="resultado">
+La probabilidad de completar el proceso en
+menos de 12 meses es aproximadamente del 66,28 %.
+</div>
+
+</section>
+
+<!-- EJEMPLO MUESTREO -->
+
+<section id="ejemplo2">
+
+<h2>Ejemplo 2. Distribución de muestreo</h2>
+
+<p>
+Una población tiene una media de 110 y una
+desviación estándar de 64. Se selecciona
+una muestra aleatoria de 48 observaciones.
+</p>
+
+<p>
+Determine la probabilidad de que la media
+muestral sea inferior a 120.
+</p>
+
+<div class="paso">
+<h3>1. Datos</h3>
+
+\[
+\mu=110
+\]
+
+\[
+\sigma=64
+\]
+
+\[
+n=48
+\]
+
+\[
+\bar X<120
+\]
+</div>
+
+<div class="paso">
+<h3>2. Representación gráfica</h3>
+<canvas id="grafica2" width="800" height="360"></canvas>
+</div>
+
+<div class="paso">
+<h3>3. Error estándar</h3>
+
+\[
+\sigma_{\bar X}=\frac{\sigma}{\sqrt n}
+\]
+
+\[
+\sigma_{\bar X}=\frac{64}{\sqrt{48}}
+\]
+
+\[
+\boxed{\sigma_{\bar X}=9,24}
+\]
+</div>
+
+<div class="paso">
+<h3>4. Estandarización</h3>
+
+\[
+Z=\frac{\bar X-\mu}{\sigma_{\bar X}}
+\]
+
+\[
+Z=\frac{120-110}{9,24}
+\]
+
+\[
+\boxed{Z=1,08}
+\]
+</div>
+
+<div class="paso">
+<h3>5. Probabilidad</h3>
+
+\[
+P(\bar X<120)
+\]
+
+\[
+P(Z<1,08)=0,8599
+\]
+</div>
+
+<div class="resultado">
+La probabilidad aproximada de que la media
+muestral sea inferior a 120 es del 85,99 %.
+</div>
+
+</section>
+
+<!-- CALCULADORA -->
+
+<section id="calculadora">
+
+<h2>Calculadora interactiva</h2>
+
+<p>
+Introducí los datos y seleccioná el tipo
+de probabilidad que deseás calcular.
+</p>
+
+<div class="grid">
+
+<div>
+<label>Tipo de distribución</label>
+<select id="tipo" onchange="mostrarMuestra()">
+  <option value="normal">Distribución normal</option>
+  <option value="muestreo">Distribución de muestreo</option>
+</select>
+</div>
+
+<div>
+<label>Tipo de probabilidad</label>
+<select id="probabilidad" onchange="mostrarIntervalo()">
+  <option value="menor">P(X &lt; a)</option>
+  <option value="mayor">P(X &gt; a)</option>
+  <option value="entre">P(a &lt; X &lt; b)</option>
+</select>
+</div>
+
+<div>
+<label>Media poblacional (μ)</label>
+<input type="number" id="media" value="11" step="any">
+</div>
+
+<div>
+<label>Desviación estándar (σ)</label>
+<input type="number" id="desviacion" value="2.4" step="any">
+</div>
+
+<div>
+<label>Límite a</label>
+<input type="number" id="limite" value="12" step="any">
+</div>
+
+<div id="campoB" style="display:none">
+<label>Límite b</label>
+<input type="number" id="limiteB" value="15" step="any">
+</div>
+
+<div id="campoN" style="display:none">
+<label>Tamaño de muestra (n)</label>
+<input type="number" id="muestra" value="48" min="1" step="1">
+</div>
+
+</div>
+
+<button onclick="calcular()">Calcular probabilidad</button>
+<button onclick="window.print()">Imprimir / Guardar PDF</button>
+
+<div id="salida"></div>
+
+<canvas id="graficaCalculadora" width="800" height="360"></canvas>
+
+</section>
+
+<!-- EVALUACIÓN -->
+
+<section id="evaluacion">
+
+<h2>Criterios de evaluación</h2>
+
+<table>
+<tr>
+<th>Criterio</th>
+<th>Aspectos evaluados</th>
+</tr>
+
+<tr>
+<td>Identificación y planteamiento</td>
+<td>Datos, dibujo, medidas y probabilidad.</td>
+</tr>
+
+<tr>
+<td>Procedimiento</td>
+<td>Fórmulas y sustituciones.</td>
+</tr>
+
+<tr>
+<td>Desarrollo y cálculo</td>
+<td>Resultados, redondeos y probabilidades.</td>
+</tr>
+
+<tr>
+<td>Interpretación</td>
+<td>Respuesta contextualizada y porcentaje correcto.</td>
+</tr>
+</table>
+
+<h3>Temas del examen parcial</h3>
+
+<ul>
+  <li>Teoría estadística.</li>
+  <li>Distribución normal.</li>
+  <li>Distribución de muestreo.</li>
+</ul>
+
+<p>
+La parte práctica debe realizarse a mano
+y entregarse en un único archivo PDF
+mediante Connect Campus.
+</p>
+
+</section>
+
+</main>
+
+<footer>
+<p>Material educativo de Estadística</p>
+<p>Distribución Normal y Distribución de Muestreo</p>
+</footer>
+
+<script>
+
+// FORMATO NUMÉRICO
+
+function formato(numero, decimales = 2) {
+  return numero.toFixed(decimales).replace(".", ",");
+}
+
+// FUNCIÓN DE ERROR APROXIMADA
+
+function erf(x) {
+  const signo = x < 0 ? -1 : 1;
+  x = Math.abs(x);
+
+  const t = 1 / (1 + 0.3275911 * x);
+
+  const y = 1 - (
+    (
+      (
+        (
+          (1.061405429 * t - 1.453152027) * t
+          + 1.421413741
+        ) * t - 0.284496736
+      ) * t + 0.254829592
+    ) * t
+  ) * Math.exp(-x * x);
+
+  return signo * y;
+}
+
+// DISTRIBUCIÓN NORMAL ACUMULADA
+
+function normalCDF(z) {
+  return 0.5 * (1 + erf(z / Math.sqrt(2)));
+}
+
+// DENSIDAD NORMAL ESTÁNDAR
+
+function densidad(z) {
+  return Math.exp(-z * z / 2) / Math.sqrt(2 * Math.PI);
+}
+
+// DIBUJAR CAMPANA NORMAL
+
+function dibujarCampana(
+  canvasId,
+  media,
+  desviacion,
+  a,
+  b,
+  modo
+) {
+
+  const canvas = document.getElementById(canvasId);
+  if (!canvas) return;
+
+  const ctx = canvas.getContext("2d");
+
+  const W = canvas.width;
+  const H = canvas.height;
+
+  ctx.clearRect(0, 0, W, H);
+
+  const izquierda = 65;
+  const derecha = W - 40;
+  const base = H - 75;
+  const altura = 230;
+
+  let minimo = media - 4 * desviacion;
+  let maximo = media + 4 * desviacion;
+
+  const valores = [a, b].filter(Number.isFinite);
+
+  valores.forEach(v => {
+    minimo = Math.min(minimo, v - desviacion);
+    maximo = Math.max(maximo, v + desviacion);
+  });
+
+  function posicionX(x) {
+    return izquierda +
+      (x - minimo) / (maximo - minimo) *
+      (derecha - izquierda);
+  }
+
+  function posicionY(x) {
+    const z = (x - media) / desviacion;
+    return base - densidad(z) / densidad(0) * altura;
+  }
+
+  // EJE HORIZONTAL
+
+  ctx.strokeStyle = "#284967";
+  ctx.lineWidth = 2;
+
+  ctx.beginPath();
+  ctx.moveTo(izquierda, base);
+  ctx.lineTo(derecha, base);
+  ctx.stroke();
+
+  // ÁREA SOMBREADA
+
+  ctx.fillStyle = "rgba(220, 75, 75, 0.30)";
+  ctx.beginPath();
+
+  let dibujando = false;
+
+  for (let i = 0; i <= 600; i++) {
+
+    const x = minimo + (maximo - minimo) * i / 600;
+
+    let sombrear = false;
+
+    if (modo === "menor") sombrear = x <= a;
+    if (modo === "mayor") sombrear = x >= a;
+    if (modo === "entre") sombrear = x >= a && x <= b;
+
+    if (sombrear) {
+
+      if (!dibujando) {
+        ctx.moveTo(posicionX(x), base);
+        dibujando = true;
+      }
+
+      ctx.lineTo(posicionX(x), posicionY(x));
+
+    } else if (dibujando) {
+
+      ctx.lineTo(posicionX(x), base);
+      ctx.closePath();
+      ctx.fill();
+
+      ctx.beginPath();
+      dibujando = false;
+    }
+  }
+
+  if (dibujando) {
+    ctx.lineTo(derecha, base);
+    ctx.closePath();
+    ctx.fill();
+  }
+
+  // CURVA NORMAL
+
+  ctx.strokeStyle = "#173b50";
+  ctx.lineWidth = 3;
+
+  ctx.beginPath();
+
+  for (let i = 0; i <= 600; i++) {
+
+    const x = minimo + (maximo - minimo) * i / 600;
+
+    if (i === 0) {
+      ctx.moveTo(posicionX(x), posicionY(x));
+    } else {
+      ctx.lineTo(posicionX(x), posicionY(x));
+    }
+  }
+
+  ctx.stroke();
+
+  // LÍNEA DE LA MEDIA
+
+  function marcar(valor, color, etiqueta) {
+
+    if (!Number.isFinite(valor)) return;
+
+    const px = posicionX(valor);
+
+    ctx.setLineDash([6, 5]);
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 2;
+
+    ctx.beginPath();
+    ctx.moveTo(px, base);
+    ctx.lineTo(px, posicionY(valor) - 12);
+    ctx.stroke();
+
+    ctx.setLineDash([]);
+
+    ctx.fillStyle = color;
+    ctx.font = "bold 16px Arial";
+    ctx.textAlign = "center";
+
+    ctx.fillText(etiqueta, px, base + 25);
+  }
+
+  marcar(media, "#284967", "μ = " + formato(media));
+
+  if (Math.abs(a - media) > 1e-9) {
+    marcar(a, "#d43c3c", "a = " + formato(a));
+  }
+
+  if (
+    modo === "entre" &&
+    Number.isFinite(b) &&
+    Math.abs(b - media) > 1e-9
+  ) {
+    marcar(b, "#d43c3c", "b = " + formato(b));
+  }
+
+  // TÍTULO
+
+  ctx.fillStyle = "#284967";
+  ctx.font = "bold 17px Arial";
+  ctx.textAlign = "center";
+
+  ctx.fillText("Distribución normal", W / 2, 28);
+}
+
+// CONTROLES
+
+function mostrarMuestra() {
+
+  const tipo = document.getElementById("tipo").value;
+
+  document.getElementById("campoN").style.display =
+    tipo === "muestreo" ? "block" : "none";
+}
+
+function mostrarIntervalo() {
+
+  const tipo = document.getElementById("probabilidad").value;
+
+  document.getElementById("campoB").style.display =
+    tipo === "entre" ? "block" : "none";
+}
+
+// CALCULADORA
+
+function calcular() {
+
+  const tipo = document.getElementById("tipo").value;
+
+  const modo =
+    document.getElementById("probabilidad").value;
+
+  const media =
+    Number(document.getElementById("media").value);
+
+  const sigma =
+    Number(document.getElementById("desviacion").value);
+
+  const a =
+    Number(document.getElementById("limite").value);
+
+  const b =
+    Number(document.getElementById("limiteB").value);
+
+  const n =
+    Number(document.getElementById("muestra").value);
+
+  const salida = document.getElementById("salida");
+
+  if (
+    !Number.isFinite(media) ||
+    !Number.isFinite(sigma) ||
+    sigma <= 0 ||
+    !Number.isFinite(a)
+  ) {
+    salida.innerHTML =
+      "<p class='resultado'>Revisá los datos ingresados.</p>";
+    return;
+  }
+
+  if (
+    tipo === "muestreo" &&
+    (!Number.isInteger(n) || n <= 0)
+  ) {
+    salida.innerHTML =
+      "<p class='resultado'>El tamaño de muestra debe ser un entero positivo.</p>";
+    return;
+  }
+
+  if (modo === "entre" && !(b > a)) {
+    salida.innerHTML =
+      "<p class='resultado'>El límite b debe ser mayor que a.</p>";
+    return;
+  }
+
+  let desviacion = sigma;
+
+  if (tipo === "muestreo") {
+    desviacion = sigma / Math.sqrt(n);
+  }
+
+  // REDONDEAR Z A DOS DECIMALES
+  // ANTES DE CONSULTAR LA PROBABILIDAD
+
+  const zA = Number(
+    ((a - media) / desviacion).toFixed(2)
+  );
+
+  const zB = Number(
+    ((b - media) / desviacion).toFixed(2)
+  );
+
+  let prob = 0;
+  let expresion = "";
+
+  const variable = tipo === "muestreo"
+    ? "\\bar X"
+    : "X";
+
+  if (modo === "menor") {
+    prob = normalCDF(zA);
+    expresion = `P(${variable}<${formato(a)})`;
+  }
+
+  if (modo === "mayor") {
+    prob = 1 - normalCDF(zA);
+    expresion = `P(${variable}>${formato(a)})`;
+  }
+
+  if (modo === "entre") {
+    prob = normalCDF(zB) - normalCDF(zA);
+    expresion =
+      `P(${formato(a)}<${variable}<${formato(b)})`;
+  }
+
+  prob = Math.max(0, Math.min(1, prob));
+
+  const probRedondeada = Number(prob.toFixed(4));
+  const porcentaje = probRedondeada * 100;
+
+  let html = "";
+
+  html += "<div class='paso'>";
+  html += "<h3>1. Datos</h3>";
+
+  html += `\\[\\mu=${formato(media)}\\]`;
+  html += `\\[\\sigma=${formato(sigma)}\\]`;
+
+  if (tipo === "muestreo") {
+    html += `\\[n=${n}\\]`;
+  }
+
+  html += "</div>";
+
+  if (tipo === "muestreo") {
+
+    html += "<div class='paso'>";
+    html += "<h3>2. Error estándar</h3>";
+
+    html += "\\[\\sigma_{\\bar X}=\\frac{\\sigma}{\\sqrt n}\\]";
+
+    html += `\\[\\sigma_{\\bar X}=\\frac{${formato(sigma)}}{\\sqrt{${n}}}\\]`;
+
+    html += `\\[\\boxed{\\sigma_{\\bar X}=${formato(desviacion)}}\\]`;
+
+    html += "</div>";
+  }
+
+  html += "<div class='paso'>";
+  html += "<h3>3. Estandarización</h3>";
+
+  html += tipo === "muestreo"
+    ? "\\[Z=\\frac{\\bar X-\\mu}{\\sigma_{\\bar X}}\\]"
+    : "\\[Z=\\frac{x-\\mu}{\\sigma}\\]";
+
+  html += `\\[Z_a=\\frac{${formato(a)}-${formato(media)}}{${formato(desviacion)}}\\]`;
+
+  html += `\\[\\boxed{Z_a=${formato(zA)}}\\]`;
+
+  if (modo === "entre") {
+
+    html += `\\[Z_b=\\frac{${formato(b)}-${formato(media)}}{${formato(desviacion)}}\\]`;
+
+    html += `\\[\\boxed{Z_b=${formato(zB)}}\\]`;
+  }
+
+  html += "</div>";
+
+  html += "<div class='paso'>";
+  html += "<h3>4. Probabilidad</h3>";
+
+  html += `\\[${expresion}=${formato(probRedondeada, 4)}\\]`;
+
+  html += "</div>";
+
+  html += "<div class='resultado'>";
+  html += "<h3>5. Interpretación</h3>";
+
+  html +=
+    `La probabilidad solicitada es aproximadamente del ` +
+    `${formato(porcentaje)} %.`;
+
+  html += "</div>";
+
+  salida.innerHTML = html;
+
+  dibujarCampana(
+    "graficaCalculadora",
+    media,
+    desviacion,
+    a,
+    b,
+    modo
+  );
+
+  if (window.MathJax && MathJax.typesetPromise) {
+    MathJax.typesetPromise([salida]);
+  }
+}
+
+// GRÁFICAS DE LOS EJEMPLOS
+
+window.addEventListener("load", function() {
+
+  dibujarCampana(
+    "grafica1",
+    11,
+    2.4,
+    12,
+    NaN,
+    "menor"
+  );
+
+  dibujarCampana(
+    "grafica2",
+    110,
+    64 / Math.sqrt(48),
+    120,
+    NaN,
+    "menor"
+  );
+
+  calcular();
+});
+
+</script>
+
+</body>
+</html>
