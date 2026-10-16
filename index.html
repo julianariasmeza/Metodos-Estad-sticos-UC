@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -18,6 +17,11 @@
 
 * {
   box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 70px;
 }
 
 body {
@@ -41,6 +45,9 @@ header h1 {
 }
 
 nav {
+  position: sticky;
+  top: 0;
+  z-index: 10;
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
@@ -56,8 +63,10 @@ nav a {
   border-radius: 6px;
 }
 
-nav a:hover {
+nav a:hover,
+nav a:focus-visible {
   background: #3b6987;
+  outline: none;
 }
 
 main {
@@ -118,6 +127,7 @@ h3 {
   border-left: 4px solid var(--azul);
   padding-left: 15px;
   margin: 20px 0;
+  overflow-x: auto;
 }
 
 .resultado {
@@ -146,6 +156,15 @@ input, select {
   border-radius: 6px;
   margin-top: 5px;
   font-size: 16px;
+  font-family: inherit;
+  color: var(--texto);
+  background: white;
+}
+
+input:focus-visible,
+select:focus-visible {
+  outline: 3px solid var(--turquesa);
+  outline-offset: 1px;
 }
 
 button {
@@ -156,16 +175,59 @@ button {
   border-radius: 7px;
   cursor: pointer;
   margin-top: 15px;
+  margin-right: 8px;
   font-size: 16px;
+  font-family: inherit;
 }
 
-button:hover {
+button:hover:not(:disabled) {
   background: #386f91;
+}
+
+button:focus-visible {
+  outline: 3px solid var(--amarillo);
+  outline-offset: 2px;
+}
+
+button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+button.secundario {
+  background: var(--turquesa);
+  color: #103b48;
+  font-weight: bold;
+}
+
+button.secundario:hover:not(:disabled) {
+  background: #6fd0d2;
+}
+
+button.claro {
+  background: transparent;
+  color: var(--azul);
+  border: 2px solid var(--azul);
+  padding: 8px 16px;
+  font-size: 14px;
+}
+
+button.claro:hover:not(:disabled) {
+  background: #e8f5f5;
+}
+
+.acciones {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  margin-top: 5px;
 }
 
 canvas {
   width: 100%;
   max-width: 800px;
+  aspect-ratio: 800 / 360;
+  height: auto;
   border: 1px solid #d5e4e8;
   border-radius: 8px;
   background: white;
@@ -201,6 +263,98 @@ footer {
   padding: 20px;
 }
 
+/* Historial de cálculos */
+
+.historial {
+  margin-top: 20px;
+  background: #e8f5f5;
+  border-left: 5px solid var(--turquesa);
+  border-radius: 8px;
+  padding: 12px 16px;
+}
+
+.historial h3 {
+  margin: 0 0 6px;
+  font-size: 17px;
+}
+
+.historial ol {
+  margin: 6px 0;
+  padding-left: 22px;
+}
+
+.historial .vacio {
+  margin: 4px 0;
+  font-size: 14px;
+  opacity: 0.8;
+}
+
+.mensaje-estado {
+  min-height: 22px;
+  font-size: 14px;
+  margin-top: 8px;
+}
+
+/* Contenedor oculto con el que se arma el PDF */
+
+#informe-pdf {
+  position: fixed;
+  left: -10000px;
+  top: 0;
+  width: 720px;
+  background: white;
+  color: var(--texto);
+  font-family: Arial, sans-serif;
+  line-height: 1.5;
+}
+
+#informe-pdf .pdf-bloque {
+  background: white;
+  padding: 4px 8px;
+}
+
+#informe-pdf .pdf-encabezado {
+  background: var(--azul);
+  color: white;
+  padding: 22px 24px;
+  border-bottom: 5px solid var(--amarillo);
+  border-radius: 8px;
+}
+
+#informe-pdf .pdf-encabezado h1 {
+  margin: 0 0 4px;
+  font-size: 26px;
+}
+
+#informe-pdf .pdf-encabezado p {
+  margin: 2px 0;
+  font-size: 14px;
+}
+
+#informe-pdf .pdf-titulo {
+  margin: 14px 0 0;
+  color: var(--azul);
+  font-size: 19px;
+  border-bottom: 3px solid var(--amarillo);
+  padding-bottom: 6px;
+}
+
+#informe-pdf img {
+  width: 100%;
+  display: block;
+  border: 1px solid #d5e4e8;
+  border-radius: 8px;
+}
+
+#informe-pdf .paso {
+  margin: 6px 0;
+  overflow: visible;
+}
+
+#informe-pdf .resultado {
+  margin: 6px 0;
+}
+
 @media(max-width: 700px) {
   .grid {
     grid-template-columns: 1fr;
@@ -212,6 +366,15 @@ footer {
 
   section {
     padding: 16px;
+  }
+
+  button {
+    width: 100%;
+    margin-right: 0;
+  }
+
+  button.claro {
+    width: auto;
   }
 }
 
@@ -243,6 +406,15 @@ window.MathJax = {
 
 <script defer
 src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+</script>
+
+<!-- Generación de PDF -->
+<script defer
+src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js">
+</script>
+
+<script defer
+src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js">
 </script>
 
 </head>
@@ -361,7 +533,7 @@ el proceso en menos de 12 meses.
 \]
 
 \[
-\sigma=2,4
+\sigma=2{,}4
 \]
 
 \[
@@ -371,7 +543,9 @@ x<12
 
 <div class="paso">
 <h3>2. Representación gráfica</h3>
-<canvas id="grafica1" width="800" height="360"></canvas>
+<canvas id="grafica1" width="1600" height="720"
+  role="img"
+  aria-label="Campana normal con media 11 y área sombreada para valores menores que 12"></canvas>
 </div>
 
 <div class="paso">
@@ -386,15 +560,15 @@ Z=\frac{x-\mu}{\sigma}
 <h3>4. Sustitución</h3>
 
 \[
-Z=\frac{12-11}{2,4}
+Z=\frac{12-11}{2{,}4}
 \]
 
 \[
-Z=0,416666\ldots
+Z=0{,}416666\ldots
 \]
 
 \[
-\boxed{Z=0,42}
+\boxed{Z=0{,}42}
 \]
 </div>
 
@@ -406,7 +580,7 @@ P(X<12)
 \]
 
 \[
-P(Z<0,42)=0,6628
+P(Z<0{,}42)=0{,}6628
 \]
 </div>
 
@@ -456,7 +630,9 @@ n=48
 
 <div class="paso">
 <h3>2. Representación gráfica</h3>
-<canvas id="grafica2" width="800" height="360"></canvas>
+<canvas id="grafica2" width="1600" height="720"
+  role="img"
+  aria-label="Campana de la distribución de muestreo con media 110 y área sombreada para medias menores que 120"></canvas>
 </div>
 
 <div class="paso">
@@ -471,7 +647,7 @@ n=48
 \]
 
 \[
-\boxed{\sigma_{\bar X}=9,24}
+\boxed{\sigma_{\bar X}=9{,}24}
 \]
 </div>
 
@@ -483,11 +659,11 @@ Z=\frac{\bar X-\mu}{\sigma_{\bar X}}
 \]
 
 \[
-Z=\frac{120-110}{9,24}
+Z=\frac{120-110}{9{,}24}
 \]
 
 \[
-\boxed{Z=1,08}
+\boxed{Z=1{,}08}
 \]
 </div>
 
@@ -499,7 +675,7 @@ P(\bar X<120)
 \]
 
 \[
-P(Z<1,08)=0,8599
+P(Z<1{,}08)=0{,}8599
 \]
 </div>
 
@@ -518,22 +694,25 @@ muestral sea inferior a 120 es del 85,99 %.
 
 <p>
 Introducí los datos y seleccioná el tipo
-de probabilidad que deseás calcular.
+de probabilidad que deseás calcular. Cada vez que
+presionás «Calcular probabilidad» el cálculo se
+guarda en el historial, y podés descargar el
+procedimiento completo en PDF.
 </p>
 
 <div class="grid">
 
 <div>
-<label>Tipo de distribución</label>
-<select id="tipo" onchange="mostrarMuestra()">
+<label for="tipo">Tipo de distribución</label>
+<select id="tipo" onchange="cambiarTipo()">
   <option value="normal">Distribución normal</option>
   <option value="muestreo">Distribución de muestreo</option>
 </select>
 </div>
 
 <div>
-<label>Tipo de probabilidad</label>
-<select id="probabilidad" onchange="mostrarIntervalo()">
+<label for="probabilidad">Tipo de probabilidad</label>
+<select id="probabilidad" onchange="mostrarCampos()">
   <option value="menor">P(X &lt; a)</option>
   <option value="mayor">P(X &gt; a)</option>
   <option value="entre">P(a &lt; X &lt; b)</option>
@@ -541,38 +720,61 @@ de probabilidad que deseás calcular.
 </div>
 
 <div>
-<label>Media poblacional (μ)</label>
-<input type="number" id="media" value="11" step="any">
+<label for="media">Media poblacional (μ)</label>
+<input type="number" id="media" value="11" step="any" inputmode="decimal">
 </div>
 
 <div>
-<label>Desviación estándar (σ)</label>
-<input type="number" id="desviacion" value="2.4" step="any">
+<label for="desviacion">Desviación estándar (σ)</label>
+<input type="number" id="desviacion" value="2.4" step="any" inputmode="decimal">
 </div>
 
 <div>
-<label>Límite a</label>
-<input type="number" id="limite" value="12" step="any">
+<label for="limite">Límite a</label>
+<input type="number" id="limite" value="12" step="any" inputmode="decimal">
 </div>
 
 <div id="campoB" style="display:none">
-<label>Límite b</label>
-<input type="number" id="limiteB" value="15" step="any">
+<label for="limiteB">Límite b</label>
+<input type="number" id="limiteB" value="15" step="any" inputmode="decimal">
 </div>
 
 <div id="campoN" style="display:none">
-<label>Tamaño de muestra (n)</label>
-<input type="number" id="muestra" value="48" min="1" step="1">
+<label for="muestra">Tamaño de muestra (n)</label>
+<input type="number" id="muestra" value="48" min="1" step="1" inputmode="numeric">
+</div>
+
+<div>
+<label for="estudiante">Nombre para el PDF (opcional)</label>
+<input type="text" id="estudiante" placeholder="Ej.: Ana Rodríguez" autocomplete="name">
 </div>
 
 </div>
 
-<button onclick="calcular()">Calcular probabilidad</button>
-<button onclick="window.print()">Imprimir / Guardar PDF</button>
+<div class="acciones no-imprimir">
+  <button id="btnCalcular" onclick="calcular(true)">Calcular probabilidad</button>
+  <button id="btnPdfActual" class="secundario" onclick="descargarPDF('actual')" disabled>
+    Descargar PDF (cálculo actual)
+  </button>
+  <button id="btnPdfTodos" class="secundario" onclick="descargarPDF('todos')" disabled>
+    Descargar PDF (historial)
+  </button>
+</div>
 
-<div id="salida"></div>
+<div id="estadoPdf" class="mensaje-estado" role="status" aria-live="polite"></div>
 
-<canvas id="graficaCalculadora" width="800" height="360"></canvas>
+<div id="salida" aria-live="polite"></div>
+
+<canvas id="graficaCalculadora" width="1600" height="720"
+  role="img" aria-label="Gráfica de la campana normal del cálculo actual"></canvas>
+
+<div class="historial no-imprimir">
+  <h3>Historial de cálculos</h3>
+  <div id="listaHistorial"><p class="vacio">Todavía no hay cálculos guardados.</p></div>
+  <button id="btnLimpiar" class="claro" onclick="limpiarHistorial()" disabled>
+    Limpiar historial
+  </button>
+</div>
 
 </section>
 
@@ -627,6 +829,9 @@ mediante Connect Campus.
 
 </main>
 
+<!-- Contenedor oculto para construir el PDF -->
+<div id="informe-pdf" aria-hidden="true"></div>
+
 <footer>
 <p>Material educativo de Estadística</p>
 <p>Distribución Normal y Distribución de Muestreo</p>
@@ -634,80 +839,120 @@ mediante Connect Campus.
 
 <script>
 
-// FORMATO NUMÉRICO
+/* =========================================================
+   UTILIDADES NUMÉRICAS
+   ========================================================= */
 
+// Formato con coma decimal (texto en pantalla y canvas)
 function formato(numero, decimales = 2) {
-  return numero.toFixed(decimales).replace(".", ",");
+  const texto = numero.toFixed(decimales);
+  // Evita mostrar "-0,00"
+  const limpio = Number(texto) === 0 ? (0).toFixed(decimales) : texto;
+  return limpio.replace(".", ",");
 }
 
-// FUNCIÓN DE ERROR APROXIMADA
-
-function erf(x) {
-  const signo = x < 0 ? -1 : 1;
-  x = Math.abs(x);
-
-  const t = 1 / (1 + 0.3275911 * x);
-
-  const y = 1 - (
-    (
-      (
-        (
-          (1.061405429 * t - 1.453152027) * t
-          + 1.421413741
-        ) * t - 0.284496736
-      ) * t + 0.254829592
-    ) * t
-  ) * Math.exp(-x * x);
-
-  return signo * y;
+// Formato para LaTeX: la coma decimal va entre llaves
+// para que MathJax no agregue espacio después de ella.
+function fT(numero, decimales = 2) {
+  return formato(numero, decimales).replace(",", "{,}");
 }
 
-// DISTRIBUCIÓN NORMAL ACUMULADA
-
-function normalCDF(z) {
-  return 0.5 * (1 + erf(z / Math.sqrt(2)));
+// Escapa texto del usuario antes de insertarlo como HTML
+function esc(texto) {
+  return String(texto).replace(/[&<>"']/g, c => ({
+    "&": "&amp;", "<": "&lt;", ">": "&gt;",
+    '"': "&quot;", "'": "&#39;"
+  }[c]));
 }
 
-// DENSIDAD NORMAL ESTÁNDAR
+// Distribución normal estándar acumulada.
+// Algoritmo de Hart (precisión de doble precisión, ~1e-15),
+// suficiente para redondear con seguridad a 4 decimales.
+function normalCDF(x) {
+  const negativo = x < 0;
+  const z = Math.abs(x);
+  let c;
 
-function densidad(z) {
-  return Math.exp(-z * z / 2) / Math.sqrt(2 * Math.PI);
+  if (z > 37) {
+    c = 0;
+  } else {
+    const e = Math.exp(-z * z / 2);
+
+    if (z < 7.07106781186547) {
+      let b = 0.0352624965998911 * z + 0.700383064443688;
+      b = b * z + 6.37396220353165;
+      b = b * z + 33.912866078383;
+      b = b * z + 112.079291497871;
+      b = b * z + 221.213596169931;
+      b = b * z + 220.206867912376;
+      c = e * b;
+
+      b = 0.0883883476483184 * z + 1.75566716318264;
+      b = b * z + 16.064177579207;
+      b = b * z + 86.7807322029461;
+      b = b * z + 296.564248779674;
+      b = b * z + 637.333633378831;
+      b = b * z + 793.826512519948;
+      b = b * z + 440.413735824752;
+      c = c / b;
+    } else {
+      let b = z + 0.65;
+      b = z + 4 / b;
+      b = z + 3 / b;
+      b = z + 2 / b;
+      b = z + 1 / b;
+      c = e / b / 2.506628274631;
+    }
+  }
+
+  return negativo ? c : 1 - c;
 }
 
-// DIBUJAR CAMPANA NORMAL
+// Redondea Z a dos decimales (como en la tabla Z)
+function redondearZ(valor) {
+  const r = Number(valor.toFixed(2));
+  return Object.is(r, -0) ? 0 : r;
+}
+
+/* =========================================================
+   DIBUJO DE LA CAMPANA
+   ========================================================= */
 
 function dibujarCampana(
-  canvasId,
-  media,
-  desviacion,
-  a,
-  b,
-  modo
+  canvasId, media, desviacion, a, b, modo, esMuestreo = false
 ) {
 
   const canvas = document.getElementById(canvasId);
   if (!canvas) return;
 
+  // Lienzo lógico 800 x 360, dibujado al doble de resolución
+  const W = 800;
+  const H = 360;
+  const escala = 2;
+
+  canvas.width = W * escala;
+  canvas.height = H * escala;
+
   const ctx = canvas.getContext("2d");
-
-  const W = canvas.width;
-  const H = canvas.height;
-
+  ctx.setTransform(escala, 0, 0, escala, 0, 0);
   ctx.clearRect(0, 0, W, H);
 
+  // Márgenes amplios para evitar superposiciones
   const izquierda = 65;
-  const derecha = W - 40;
-  const base = H - 75;
-  const altura = 230;
+  const derecha = W - 65;
+  const base = H - 105;
+  const altura = 175;
 
   let minimo = media - 4 * desviacion;
   let maximo = media + 4 * desviacion;
 
-  const valores = [a, b].filter(Number.isFinite);
+  const limites = modo === "entre" ? [a, b] : [a];
 
-  valores.forEach(v => {
-    minimo = Math.min(minimo, v - desviacion);
-    maximo = Math.max(maximo, v + desviacion);
+  limites.forEach(valor => {
+    if (Number.isFinite(valor)) {
+      minimo = Math.min(minimo, valor - desviacion);
+      maximo = Math.max(maximo, valor + desviacion);
+    }
   });
 
   function posicionX(x) {
@@ -718,72 +963,69 @@ function dibujarCampana(
 
   function posicionY(x) {
     const z = (x - media) / desviacion;
-    return base - densidad(z) / densidad(0) * altura;
+    return base - Math.exp(-z * z / 2) * altura;
   }
 
-  // EJE HORIZONTAL
+  // Título
+  ctx.fillStyle = "#284967";
+  ctx.font = "bold 21px Arial";
+  ctx.textAlign = "center";
+  ctx.fillText(
+    esMuestreo ? "Distribución de muestreo" : "Distribución normal",
+    W / 2, 30
+  );
 
-  ctx.strokeStyle = "#284967";
-  ctx.lineWidth = 2;
+  // Área sombreada con límites exactos
+  let inicio = minimo;
+  let fin = maximo;
 
-  ctx.beginPath();
-  ctx.moveTo(izquierda, base);
-  ctx.lineTo(derecha, base);
-  ctx.stroke();
+  if (modo === "menor") fin = Math.min(a, maximo);
+  if (modo === "mayor") inicio = Math.max(a, minimo);
 
-  // ÁREA SOMBREADA
+  if (modo === "entre") {
+    inicio = Math.max(a, minimo);
+    fin = Math.min(b, maximo);
+  }
 
-  ctx.fillStyle = "rgba(220, 75, 75, 0.30)";
-  ctx.beginPath();
+  if (inicio < fin) {
 
-  let dibujando = false;
+    ctx.beginPath();
+    ctx.moveTo(posicionX(inicio), base);
 
-  for (let i = 0; i <= 600; i++) {
-
-    const x = minimo + (maximo - minimo) * i / 600;
-
-    let sombrear = false;
-
-    if (modo === "menor") sombrear = x <= a;
-    if (modo === "mayor") sombrear = x >= a;
-    if (modo === "entre") sombrear = x >= a && x <= b;
-
-    if (sombrear) {
-
-      if (!dibujando) {
-        ctx.moveTo(posicionX(x), base);
-        dibujando = true;
-      }
-
+    for (let i = 0; i <= 800; i++) {
+      const x = inicio + (fin - inicio) * i / 800;
       ctx.lineTo(posicionX(x), posicionY(x));
-
-    } else if (dibujando) {
-
-      ctx.lineTo(posicionX(x), base);
-      ctx.closePath();
-      ctx.fill();
-
-      ctx.beginPath();
-      dibujando = false;
     }
-  }
 
-  if (dibujando) {
-    ctx.lineTo(derecha, base);
+    ctx.lineTo(posicionX(fin), base);
     ctx.closePath();
+
+    ctx.fillStyle = "rgba(225, 75, 75, 0.30)";
     ctx.fill();
   }
 
-  // CURVA NORMAL
+  // Eje horizontal
+  ctx.beginPath();
+  ctx.moveTo(izquierda, base);
+  ctx.lineTo(derecha, base);
+  ctx.strokeStyle = "#284967";
+  ctx.lineWidth = 2;
+  ctx.stroke();
 
-  ctx.strokeStyle = "#173b50";
-  ctx.lineWidth = 3;
+  // Flecha del eje
+  ctx.beginPath();
+  ctx.moveTo(derecha, base);
+  ctx.lineTo(derecha - 10, base - 5);
+  ctx.lineTo(derecha - 10, base + 5);
+  ctx.closePath();
+  ctx.fillStyle = "#284967";
+  ctx.fill();
 
+  // Curva normal
   ctx.beginPath();
 
-  for (let i = 0; i <= 600; i++) {
-
-    const x = minimo + (maximo - minimo) * i / 600;
+  for (let i = 0; i <= 800; i++) {
+    const x = minimo + (maximo - minimo) * i / 800;
 
     if (i === 0) {
       ctx.moveTo(posicionX(x), posicionY(x));
@@ -792,165 +1034,271 @@ function dibujarCampana(
     }
   }
 
+  ctx.strokeStyle = "#173b50";
+  ctx.lineWidth = 3;
   ctx.stroke();
 
-  // LÍNEA DE LA MEDIA
-
-  function marcar(valor, color, etiqueta) {
+  // Líneas verticales
+  function marcarLinea(valor, color) {
 
     if (!Number.isFinite(valor)) return;
 
     const px = posicionX(valor);
 
-    ctx.setLineDash([6, 5]);
+    ctx.beginPath();
+    ctx.setLineDash([7, 5]);
+    ctx.moveTo(px, base);
+    ctx.lineTo(px, posicionY(valor) - 8);
+
     ctx.strokeStyle = color;
     ctx.lineWidth = 2;
-
-    ctx.beginPath();
-    ctx.moveTo(px, base);
-    ctx.lineTo(px, posicionY(valor) - 12);
     ctx.stroke();
-
     ctx.setLineDash([]);
+  }
 
-    ctx.fillStyle = color;
-    ctx.font = "bold 16px Arial";
+  marcarLinea(media, "#284967");
+  marcarLinea(a, "#d43c3c");
+
+  if (modo === "entre") {
+    marcarLinea(b, "#d43c3c");
+  }
+
+  // Etiquetas distribuidas en filas
+  const marcas = [
+    {
+      valor: media,
+      texto: "μ = " + formato(media),
+      color: "#284967"
+    },
+    {
+      valor: a,
+      texto: "a = " + formato(a),
+      color: "#d43c3c"
+    }
+  ];
+
+  if (modo === "entre") {
+    marcas.push({
+      valor: b,
+      texto: "b = " + formato(b),
+      color: "#d43c3c"
+    });
+  }
+
+  // Evitar duplicar marcas cuando coinciden
+  const unicas = marcas.filter((marca, i) =>
+    marcas.findIndex(m =>
+      Math.abs(m.valor - marca.valor) < 1e-9
+    ) === i
+  );
+
+  // Alternar filas cuando las etiquetas estén cerca
+  const ubicadas = [];
+
+  unicas.forEach(marca => {
+
+    const px = posicionX(marca.valor);
+
+    let fila = 0;
+
+    while (
+      ubicadas.some(u =>
+        u.fila === fila &&
+        Math.abs(u.px - px) < 135
+      )
+    ) {
+      fila++;
+    }
+
+    ubicadas.push({ px, fila });
+
+    const py = base + 29 + fila * 27;
+
+    ctx.font = "bold 15px Arial";
     ctx.textAlign = "center";
 
-    ctx.fillText(etiqueta, px, base + 25);
+    const ancho = ctx.measureText(marca.texto).width + 12;
+
+    ctx.fillStyle = "rgba(255,255,255,0.95)";
+    ctx.fillRect(px - ancho / 2, py - 17, ancho, 23);
+
+    ctx.fillStyle = marca.color;
+    ctx.fillText(marca.texto, px, py);
+  });
+
+  // Etiqueta de probabilidad
+  const variable = esMuestreo ? "X̄" : "X";
+
+  let texto = "";
+
+  if (modo === "menor") {
+    texto = `P(${variable} < ${formato(a)})`;
   }
 
-  marcar(media, "#284967", "μ = " + formato(media));
-
-  if (Math.abs(a - media) > 1e-9) {
-    marcar(a, "#d43c3c", "a = " + formato(a));
+  if (modo === "mayor") {
+    texto = `P(${variable} > ${formato(a)})`;
   }
 
-  if (
-    modo === "entre" &&
-    Number.isFinite(b) &&
-    Math.abs(b - media) > 1e-9
-  ) {
-    marcar(b, "#d43c3c", "b = " + formato(b));
+  if (modo === "entre") {
+    texto = `P(${formato(a)} < ${variable} < ${formato(b)})`;
   }
 
-  // TÍTULO
+  ctx.font = "bold 16px Arial";
 
-  ctx.fillStyle = "#284967";
-  ctx.font = "bold 17px Arial";
-  ctx.textAlign = "center";
+  const anchoTexto = ctx.measureText(texto).width + 24;
+  const cajaX = izquierda + 10;
+  const cajaY = 57;
 
-  ctx.fillText("Distribución normal", W / 2, 28);
+  ctx.fillStyle = "#fff1f1";
+  ctx.strokeStyle = "#d43c3c";
+  ctx.lineWidth = 1.5;
+
+  ctx.fillRect(cajaX, cajaY, anchoTexto, 36);
+  ctx.strokeRect(cajaX, cajaY, anchoTexto, 36);
+
+  ctx.fillStyle = "#a82424";
+  ctx.textAlign = "left";
+  ctx.fillText(texto, cajaX + 12, cajaY + 24);
 }
 
-// CONTROLES
+/* =========================================================
+   CALCULADORA
+   ========================================================= */
 
-function mostrarMuestra() {
+let actual = null;       // último cálculo mostrado
+const historial = [];    // cálculos guardados (máx. 20)
 
+const EJEMPLOS = {
+  normal:   { media: 11,  sigma: 2.4, a: 12,  b: 15,  n: 48 },
+  muestreo: { media: 110, sigma: 64,  a: 120, b: 130, n: 48 }
+};
+
+function mostrarCampos() {
   const tipo = document.getElementById("tipo").value;
+  const modo = document.getElementById("probabilidad").value;
 
   document.getElementById("campoN").style.display =
     tipo === "muestreo" ? "block" : "none";
-}
-
-function mostrarIntervalo() {
-
-  const tipo = document.getElementById("probabilidad").value;
 
   document.getElementById("campoB").style.display =
-    tipo === "entre" ? "block" : "none";
+    modo === "entre" ? "block" : "none";
 }
 
-// CALCULADORA
+// Al cambiar el tipo se cargan los datos del ejemplo correspondiente
+function cambiarTipo() {
+  const tipo = document.getElementById("tipo").value;
+  const e = EJEMPLOS[tipo];
 
-function calcular() {
+  document.getElementById("media").value = e.media;
+  document.getElementById("desviacion").value = e.sigma;
+  document.getElementById("limite").value = e.a;
+  document.getElementById("limiteB").value = e.b;
+  document.getElementById("muestra").value = e.n;
+
+  mostrarCampos();
+}
+
+function mostrarError(mensaje) {
+  document.getElementById("salida").innerHTML =
+    "<p class='resultado'>" + mensaje + "</p>";
+  actual = null;
+  actualizarBotones();
+}
+
+function actualizarBotones() {
+  document.getElementById("btnPdfActual").disabled = !actual;
+  document.getElementById("btnPdfTodos").disabled = historial.length === 0;
+  document.getElementById("btnLimpiar").disabled = historial.length === 0;
+}
+
+function renderHistorial() {
+  const cont = document.getElementById("listaHistorial");
+
+  if (historial.length === 0) {
+    cont.innerHTML =
+      "<p class='vacio'>Todavía no hay cálculos guardados.</p>";
+  } else {
+    cont.innerHTML = "<ol>" + historial.map(c =>
+      `<li>${esc(c.titulo)} = <strong>${esc(c.resumen)}</strong></li>`
+    ).join("") + "</ol>";
+  }
+
+  actualizarBotones();
+}
+
+function limpiarHistorial() {
+  historial.length = 0;
+  renderHistorial();
+  document.getElementById("estadoPdf").textContent = "";
+}
+
+async function calcular(registrar = true) {
 
   const tipo = document.getElementById("tipo").value;
+  const modo = document.getElementById("probabilidad").value;
 
-  const modo =
-    document.getElementById("probabilidad").value;
+  const media = Number(document.getElementById("media").value);
+  const sigma = Number(document.getElementById("desviacion").value);
+  const a = Number(document.getElementById("limite").value);
+  const b = Number(document.getElementById("limiteB").value);
+  const n = Number(document.getElementById("muestra").value);
 
-  const media =
-    Number(document.getElementById("media").value);
-
-  const sigma =
-    Number(document.getElementById("desviacion").value);
-
-  const a =
-    Number(document.getElementById("limite").value);
-
-  const b =
-    Number(document.getElementById("limiteB").value);
-
-  const n =
-    Number(document.getElementById("muestra").value);
-
-  const salida = document.getElementById("salida");
+  const esMuestreo = tipo === "muestreo";
 
   if (
+    document.getElementById("media").value === "" ||
+    document.getElementById("limite").value === "" ||
     !Number.isFinite(media) ||
     !Number.isFinite(sigma) ||
     sigma <= 0 ||
     !Number.isFinite(a)
   ) {
-    salida.innerHTML =
-      "<p class='resultado'>Revisá los datos ingresados.</p>";
+    mostrarError("Revisá los datos ingresados (σ debe ser mayor que 0).");
     return;
   }
 
-  if (
-    tipo === "muestreo" &&
-    (!Number.isInteger(n) || n <= 0)
-  ) {
-    salida.innerHTML =
-      "<p class='resultado'>El tamaño de muestra debe ser un entero positivo.</p>";
+  if (esMuestreo && (!Number.isInteger(n) || n <= 0)) {
+    mostrarError("El tamaño de muestra debe ser un entero positivo.");
     return;
   }
 
-  if (modo === "entre" && !(b > a)) {
-    salida.innerHTML =
-      "<p class='resultado'>El límite b debe ser mayor que a.</p>";
+  if (modo === "entre" && !(Number.isFinite(b) && b > a)) {
+    mostrarError("El límite b debe ser mayor que a.");
     return;
   }
 
-  let desviacion = sigma;
+  const desviacion = esMuestreo ? sigma / Math.sqrt(n) : sigma;
 
-  if (tipo === "muestreo") {
-    desviacion = sigma / Math.sqrt(n);
-  }
+  // Z redondeado a dos decimales ANTES de consultar la probabilidad
+  const zA = redondearZ((a - media) / desviacion);
+  const zB = modo === "entre"
+    ? redondearZ((b - media) / desviacion)
+    : 0;
 
-  // REDONDEAR Z A DOS DECIMALES
-  // ANTES DE CONSULTAR LA PROBABILIDAD
-
-  const zA = Number(
-    ((a - media) / desviacion).toFixed(2)
-  );
-
-  const zB = Number(
-    ((b - media) / desviacion).toFixed(2)
-  );
+  const variable = esMuestreo ? "\\bar X" : "X";
 
   let prob = 0;
   let expresion = "";
-
-  const variable = tipo === "muestreo"
-    ? "\\bar X"
-    : "X";
+  let expresionTexto = "";
+  const varTexto = esMuestreo ? "X̄" : "X";
 
   if (modo === "menor") {
     prob = normalCDF(zA);
-    expresion = `P(${variable}<${formato(a)})`;
+    expresion = `P(${variable}<${fT(a)})`;
+    expresionTexto = `P(${varTexto} < ${formato(a)})`;
   }
 
   if (modo === "mayor") {
     prob = 1 - normalCDF(zA);
-    expresion = `P(${variable}>${formato(a)})`;
+    expresion = `P(${variable}>${fT(a)})`;
+    expresionTexto = `P(${varTexto} > ${formato(a)})`;
   }
 
   if (modo === "entre") {
     prob = normalCDF(zB) - normalCDF(zA);
-    expresion =
-      `P(${formato(a)}<${variable}<${formato(b)})`;
+    expresion = `P(${fT(a)}<${variable}<${fT(b)})`;
+    expresionTexto =
+      `P(${formato(a)} < ${varTexto} < ${formato(b)})`;
   }
 
   prob = Math.max(0, Math.min(1, prob));
@@ -958,63 +1306,71 @@ function calcular() {
   const probRedondeada = Number(prob.toFixed(4));
   const porcentaje = probRedondeada * 100;
 
+  // Expresión de la probabilidad en términos de Z
+  let expresionZ = "";
+
+  if (modo === "menor") expresionZ = `P(Z<${fT(zA)})`;
+  if (modo === "mayor") expresionZ = `P(Z>${fT(zA)})`;
+  if (modo === "entre") expresionZ = `P(${fT(zA)}<Z<${fT(zB)})`;
+
   let html = "";
 
   html += "<div class='paso'>";
   html += "<h3>1. Datos</h3>";
 
-  html += `\\[\\mu=${formato(media)}\\]`;
-  html += `\\[\\sigma=${formato(sigma)}\\]`;
+  html += `\\[\\mu=${fT(media)}\\]`;
+  html += `\\[\\sigma=${fT(sigma)}\\]`;
 
-  if (tipo === "muestreo") {
+  if (esMuestreo) {
     html += `\\[n=${n}\\]`;
   }
 
+  html += `\\[${expresion}\\]`;
   html += "</div>";
 
-  if (tipo === "muestreo") {
+  if (esMuestreo) {
 
     html += "<div class='paso'>";
     html += "<h3>2. Error estándar</h3>";
 
     html += "\\[\\sigma_{\\bar X}=\\frac{\\sigma}{\\sqrt n}\\]";
 
-    html += `\\[\\sigma_{\\bar X}=\\frac{${formato(sigma)}}{\\sqrt{${n}}}\\]`;
+    html += `\\[\\sigma_{\\bar X}=\\frac{${fT(sigma)}}{\\sqrt{${n}}}\\]`;
 
-    html += `\\[\\boxed{\\sigma_{\\bar X}=${formato(desviacion)}}\\]`;
+    html += `\\[\\boxed{\\sigma_{\\bar X}=${fT(desviacion)}}\\]`;
 
     html += "</div>";
   }
 
   html += "<div class='paso'>";
-  html += "<h3>3. Estandarización</h3>";
+  html += "<h3>" + (esMuestreo ? "3" : "2") + ". Estandarización</h3>";
 
-  html += tipo === "muestreo"
+  html += esMuestreo
     ? "\\[Z=\\frac{\\bar X-\\mu}{\\sigma_{\\bar X}}\\]"
     : "\\[Z=\\frac{x-\\mu}{\\sigma}\\]";
 
-  html += `\\[Z_a=\\frac{${formato(a)}-${formato(media)}}{${formato(desviacion)}}\\]`;
+  html += `\\[Z_a=\\frac{${fT(a)}-${fT(media)}}{${fT(desviacion)}}\\]`;
 
-  html += `\\[\\boxed{Z_a=${formato(zA)}}\\]`;
+  html += `\\[\\boxed{Z_a=${fT(zA)}}\\]`;
 
   if (modo === "entre") {
 
-    html += `\\[Z_b=\\frac{${formato(b)}-${formato(media)}}{${formato(desviacion)}}\\]`;
+    html += `\\[Z_b=\\frac{${fT(b)}-${fT(media)}}{${fT(desviacion)}}\\]`;
 
-    html += `\\[\\boxed{Z_b=${formato(zB)}}\\]`;
+    html += `\\[\\boxed{Z_b=${fT(zB)}}\\]`;
   }
 
   html += "</div>";
 
   html += "<div class='paso'>";
-  html += "<h3>4. Probabilidad</h3>";
+  html += "<h3>" + (esMuestreo ? "4" : "3") + ". Probabilidad</h3>";
 
-  html += `\\[${expresion}=${formato(probRedondeada, 4)}\\]`;
+  html += `\\[${expresionZ}=${fT(probRedondeada, 4)}\\]`;
 
   html += "</div>";
 
   html += "<div class='resultado'>";
-  html += "<h3>5. Interpretación</h3>";
+  html += "<h3>" + (esMuestreo ? "5" : "4") + ". Interpretación</h3>";
 
   html +=
     `La probabilidad solicitada es aproximadamente del ` +
@@ -1022,6 +1378,7 @@ function calcular() {
 
   html += "</div>";
 
+  const salida = document.getElementById("salida");
   salida.innerHTML = html;
 
   dibujarCampana(
@@ -1030,26 +1387,243 @@ function calcular() {
     desviacion,
     a,
     b,
-    modo
+    modo,
+    esMuestreo
   );
 
-  if (window.MathJax && MathJax.typesetPromise) {
-    MathJax.typesetPromise([salida]);
+  // Esperar a que MathJax termine para guardar el HTML ya renderizado
+  try {
+    if (window.MathJax && MathJax.typesetPromise) {
+      await MathJax.typesetPromise([salida]);
+    }
+  } catch (e) {
+    console.warn("MathJax:", e);
+  }
+
+  actual = {
+    tipo: esMuestreo ? "Distribución de muestreo" : "Distribución normal",
+    titulo: expresionTexto,
+    resumen: `${formato(porcentaje)} %`,
+    img: document.getElementById("graficaCalculadora")
+           .toDataURL("image/png"),
+    pasos: Array.from(salida.children).map(el => el.outerHTML)
+  };
+
+  if (registrar) {
+    historial.push(actual);
+    if (historial.length > 20) historial.shift();
+    renderHistorial();
+  } else {
+    actualizarBotones();
   }
 }
 
-// GRÁFICAS DE LOS EJEMPLOS
+/* =========================================================
+   DESCARGA EN PDF
+   ========================================================= */
+
+async function descargarPDF(cual) {
+
+  const estado = document.getElementById("estadoPdf");
+
+  const lista = cual === "todos" ? historial : (actual ? [actual] : []);
+
+  if (lista.length === 0) {
+    estado.textContent = "Primero realizá un cálculo.";
+    return;
+  }
+
+  if (!window.html2canvas || !window.jspdf) {
+    estado.textContent =
+      "No se pudieron cargar las librerías del PDF. " +
+      "Revisá tu conexión a internet e intentá de nuevo.";
+    return;
+  }
+
+  const botones = [
+    document.getElementById("btnCalcular"),
+    document.getElementById("btnPdfActual"),
+    document.getElementById("btnPdfTodos")
+  ];
+
+  botones.forEach(btn => btn.disabled = true);
+  estado.textContent = "Generando PDF…";
+
+  try {
+
+    const contenedor = document.getElementById("informe-pdf");
+    contenedor.innerHTML = "";
+
+    function agregarBloque(html) {
+      const div = document.createElement("div");
+      div.className = "pdf-bloque";
+      div.innerHTML = html;
+      contenedor.appendChild(div);
+    }
+
+    const nombre = document.getElementById("estudiante").value.trim();
+    const fecha = new Date().toLocaleDateString("es-CR", {
+      day: "2-digit", month: "long", year: "numeric"
+    });
+
+    agregarBloque(
+      "<div class='pdf-encabezado'>" +
+      "<h1>Informe de cálculo</h1>" +
+      "<p>Distribución normal y distribución de muestreo</p>" +
+      "<p>" +
+      (nombre ? "Estudiante: " + esc(nombre) + " · " : "") +
+      "Fecha: " + esc(fecha) +
+      "</p></div>"
+    );
+
+    lista.forEach((c, i) => {
+      agregarBloque(
+        "<h2 class='pdf-titulo'>Cálculo " + (i + 1) + ": " +
+        esc(c.tipo) + " — " + esc(c.titulo) + "</h2>"
+      );
+
+      agregarBloque("<img src='" + c.img + "' alt='Gráfica del cálculo'>");
+
+      c.pasos.forEach(agregarBloque);
+    });
+
+    // Si hay fórmulas sin renderizar, procesarlas
+    if (window.MathJax && MathJax.typesetPromise) {
+      await MathJax.typesetPromise([contenedor]);
+    }
+
+    if (document.fonts && document.fonts.ready) {
+      await document.fonts.ready;
+    }
+
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF({ unit: "mm", format: "a4" });
+
+    const anchoPagina = 210;
+    const altoPagina = 297;
+    const margen = 12;
+    const anchoUtil = anchoPagina - 2 * margen;
+    const altoUtil = altoPagina - 2 * margen - 6;
+    const limiteY = margen + altoUtil;
+
+    let y = margen;
+
+    for (const bloque of contenedor.children) {
+
+      const lienzo = await html2canvas(bloque, {
+        scale: 2,
+        backgroundColor: "#ffffff",
+        useCORS: true,
+        logging: false
+      });
+
+      const alto = lienzo.height * anchoUtil / lienzo.width;
+
+      if (alto <= altoUtil) {
+
+        // El bloque cabe completo: pasar de página si no entra
+        if (y + alto > limiteY) {
+          pdf.addPage();
+          y = margen;
+        }
+
+        pdf.addImage(
+          lienzo.toDataURL("image/jpeg", 0.95),
+          "JPEG", margen, y, anchoUtil, alto
+        );
+
+        y += alto + 3;
+
+      } else {
+
+        // Bloque más alto que una página: se corta en tramos
+        const pxPorMm = lienzo.width / anchoUtil;
+        let desde = 0;
+
+        while (desde < lienzo.height) {
+
+          if (limiteY - y < 15) {
+            pdf.addPage();
+            y = margen;
+          }
+
+          const disponible = Math.floor((limiteY - y) * pxPorMm);
+          const tramo = Math.min(lienzo.height - desde, disponible);
+
+          const parte = document.createElement("canvas");
+          parte.width = lienzo.width;
+          parte.height = tramo;
+
+          parte.getContext("2d").drawImage(
+            lienzo, 0, desde, lienzo.width, tramo,
+            0, 0, lienzo.width, tramo
+          );
+
+          pdf.addImage(
+            parte.toDataURL("image/jpeg", 0.95),
+            "JPEG", margen, y, anchoUtil, tramo / pxPorMm
+          );
+
+          y += tramo / pxPorMm;
+          desde += tramo;
+
+          if (desde < lienzo.height) {
+            pdf.addPage();
+            y = margen;
+          }
+        }
+
+        y += 3;
+      }
+    }
+
+    // Numeración de páginas
+    const total = pdf.getNumberOfPages();
+
+    for (let i = 1; i <= total; i++) {
+      pdf.setPage(i);
+      pdf.setFontSize(9);
+      pdf.setTextColor(40, 73, 103);
+      pdf.text(
+        "Página " + i + " de " + total,
+        anchoPagina / 2, altoPagina - 7,
+        { align: "center" }
+      );
+    }
+
+    const hoy = new Date().toISOString().slice(0, 10);
+    pdf.save("calculo-estadistica-" + hoy + ".pdf");
+
+    estado.textContent = "PDF descargado correctamente.";
+
+  } catch (error) {
+    console.error(error);
+    estado.textContent =
+      "Ocurrió un error al generar el PDF. Intentá de nuevo.";
+  } finally {
+    document.getElementById("informe-pdf").innerHTML = "";
+    document.getElementById("btnCalcular").disabled = false;
+    actualizarBotones();
+  }
+}
+
+/* =========================================================
+   INICIO
+   ========================================================= */
+
+// Calcular con Enter desde los campos numéricos
+document.addEventListener("keydown", function(evento) {
+  if (
+    evento.key === "Enter" &&
+    evento.target.matches("#calculadora input[type='number']")
+  ) {
+    calcular(true);
+  }
+});
 
 window.addEventListener("load", function() {
 
-  dibujarCampana(
-    "grafica1",
-    11,
-    2.4,
-    12,
-    NaN,
-    "menor"
-  );
+  dibujarCampana("grafica1", 11, 2.4, 12, NaN, "menor", false);
 
   dibujarCampana(
     "grafica2",
@@ -1057,10 +1631,14 @@ window.addEventListener("load", function() {
     64 / Math.sqrt(48),
     120,
     NaN,
-    "menor"
+    "menor",
+    true
   );
 
-  calcular();
+  mostrarCampos();
+
+  // Cálculo inicial de ejemplo (no se guarda en el historial)
+  calcular(false);
 });
 
 </script>
