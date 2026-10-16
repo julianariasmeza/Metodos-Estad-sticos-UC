@@ -392,6 +392,35 @@ footer {
     break-inside: avoid;
   }
 }
+
+/* CORRECCION DE FORMULAS EN PDF */
+#informe-pdf .pdf-bloque {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+#informe-pdf .paso {
+  overflow: visible;
+  padding: 12px 18px;
+  margin: 8px 0;
+}
+
+#informe-pdf mjx-container[display="true"] {
+  display: block !important;
+  text-align: center !important;
+  margin: 16px 0 !important;
+  overflow: visible !important;
+}
+
+#informe-pdf mjx-assistive-mml {
+  display: none !important;
+}
+
+#informe-pdf .resultado {
+  padding: 18px;
+  margin-top: 12px;
+}
+
 </style>
 
 <!-- Renderizado de fórmulas matemáticas -->
@@ -1379,7 +1408,13 @@ async function calcular(registrar = true) {
   html += "</div>";
 
   const salida = document.getElementById("salida");
-  salida.innerHTML = html;
+  const pasosParaPDF = (() => {
+  const temporal = document.createElement("div");
+  temporal.innerHTML = html;
+  return Array.from(temporal.children)
+    .map(el => el.outerHTML);
+})();
+salida.innerHTML = html;
 
   dibujarCampana(
     "graficaCalculadora",
@@ -1406,7 +1441,7 @@ async function calcular(registrar = true) {
     resumen: `${formato(porcentaje)} %`,
     img: document.getElementById("graficaCalculadora")
            .toDataURL("image/png"),
-    pasos: Array.from(salida.children).map(el => el.outerHTML)
+    pasos: pasosParaPDF
   };
 
   if (registrar) {
