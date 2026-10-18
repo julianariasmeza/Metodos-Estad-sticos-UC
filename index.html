@@ -446,6 +446,7 @@ src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js
 src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js">
 </script>
 
+<script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
 </head>
 
 <body>
@@ -790,9 +791,32 @@ procedimiento completo en PDF.
   </button>
 </div>
 
+
+<div class="acciones no-imprimir">
+  <button id="btnExcelActual"
+          class="secundario"
+          onclick="descargarExcel('actual')"
+          disabled>
+    Descargar Excel (cálculo actual)
+  </button>
+
+  <button id="btnExcelTodos"
+          class="secundario"
+          onclick="descargarExcel('todos')"
+          disabled>
+    Descargar Excel (historial)
+  </button>
+</div>
+
 <div id="estadoPdf" class="mensaje-estado" role="status" aria-live="polite"></div>
 
 <div id="salida" aria-live="polite"></div>
+
+
+<button type="button"
+onclick="imprimirInformeLimpio()">
+  Generar PDF corregido
+</button>
 
 <canvas id="graficaCalculadora" width="1600" height="720"
   role="img" aria-label="Gráfica de la campana normal del cálculo actual"></canvas>
@@ -1235,6 +1259,11 @@ function mostrarError(mensaje) {
 }
 
 function actualizarBotones() {
+
+  document.getElementById("btnExcelActual").disabled = !actual;
+  document.getElementById("btnExcelTodos").disabled =
+    historial.length === 0;
+
   document.getElementById("btnPdfActual").disabled = !actual;
   document.getElementById("btnPdfTodos").disabled = historial.length === 0;
   document.getElementById("btnLimpiar").disabled = historial.length === 0;
@@ -1436,6 +1465,15 @@ salida.innerHTML = html;
   }
 
   actual = {
+    datosExcel: {
+      tipo: tipo,
+      modo: modo,
+      media: media,
+      sigma: sigma,
+      a: a,
+      b: modo === "entre" ? b : null,
+      n: esMuestreo ? n : null
+    },
     tipo: esMuestreo ? "Distribución de muestreo" : "Distribución normal",
     titulo: expresionTexto,
     resumen: `${formato(porcentaje)} %`,
@@ -1678,5 +1716,272 @@ window.addEventListener("load", function() {
 
 </script>
 
+
+<script>
+function imprimirInformeLimpio() {
+
+  const salida = document.getElementById("salida");
+  const grafica = document.getElementById("graficaCalculadora");
+
+  if (!salida || !salida.innerHTML.trim()) {
+    alert("Primero realizá un cálculo.");
+    return;
+  }
+
+  // Clonar el contenido y eliminar MathJax ya renderizado.
+  const copia = salida.cloneNode(true);
+
+  copia.querySelectorAll(
+    "mjx-container, mjx-assistive-mml"
+  ).forEach(el => el.remove());
+
+  // Recuperar las expresiones originales desde el
+  // código matemático generado por la calculadora.
+  const tipo = document.getElementById("tipo").value;
+  const mu = Number(document.getElementById("media").value);
+  const sigma = Number(document.getElementById("desviacion").value);
+  const n = Number(document.getElementById("muestra").value);
+  const a = Number(document.getElementById("limite").value);
+  const b = Number(document.getElementById("limiteB").value);
+  const modo = document.getElementById("probabilidad").value;
+
+  const f = x => x.toFixed(2).replace(".", ",");
+
+  const error = tipo === "muestreo"
+    ? sigma / Math.sqrt(n)
+    : sigma;
+
+  const za = (a - mu) / error;
+  const zb = (b - mu) / error;
+
+  const z = x => Number(x.toFixed(2));
+
+  const variable = tipo === "muestreo"
+    ? "\\bar X"
+    : "X";
+
+  const datos = [
+    `\\mu=${f(mu)}`,
+    `\\sigma=${f(sigma)}`
+  ];
+
+  if (tipo === "muestreo") {
+    datos.push(`n=${n}`);
+  }
+
+  let expresion = "";
+
+  if (modo === "menor") {
+    expresion = `P(${variable}<${f(a)})`;
+  } else if (modo === "mayor") {
+    expresion = `P(${variable}>${f(a)})`;
+  } else {
+    expresion = `P(${f(a)}<${variable}<${f(b)})`;
+  }
+
+  const secciones = [];
+
+  secciones.push(`
+    <section>
+      <h2>1. Datos</h2>
+      ${datos.map(d => `<div class="ecuacion">\\[${d}\\]</div>`).join("")}
+      <div class="ecuacion">\\[${expresion}\\]</div>
+    </section>
+  `);
+
+  let numero = 2;
+
+  if (tipo === "muestreo") {
+    secciones.push(`
+      <section>
+        <h2>${numero++}. Error estándar</h2>
+        <div class="ecuacion">
+          \\[\\sigma_{\\bar X}=\\frac{\\sigma}{\\sqrt{n}}\\]
+        </div>
+        <div class="ecuacion">
+          \\[\\sigma_{\\bar X}=\\frac{${f(sigma)}}{\\sqrt{${n}}}\\]
+        </div>
+        <div class="ecuacion">
+          \\[\\boxed{\\sigma_{\\bar X}=${f(error)}}\\]
+        </div>
+      </section>
+    `);
+  }
+
+  secciones.push(`
+    <section>
+      <h2>${numero++}. Estandarización</h2>
+      <div class="ecuacion">
+        \\[Z=\\frac{x-\\mu}{\\sigma}\\]
+      </div>
+      <div class="ecuacion">
+        \\[Z_a=\\frac{${f(a)}-${f(mu)}}{${f(error)}}\\]
+      </div>
+      <div class="ecuacion">
+        \\[\\boxed{Z_a=${f(z(za))}}\\]
+      </div>
+      ${modo === "entre" ? `
+        <div class="ecuacion">
+          \\[Z_b=\\frac{${f(b)}-${f(mu)}}{${f(error)}}\\]
+        </div>
+        <div class="ecuacion">
+          \\[\\boxed{Z_b=${f(z(zb))}}\\]
+        </div>
+      ` : ""}
+    </section>
+  `);
+
+  // Usar la probabilidad ya calculada en la página.
+  const textoResultado =
+    salida.querySelector(".resultado")?.textContent?.trim()
+    || "Resultado del cálculo";
+
+  secciones.push(`
+    <section>
+      <h2>${numero++}. Interpretación</h2>
+      <div class="resultado">${textoResultado}</div>
+    </section>
+  `);
+
+  const ventana = window.open("", "_blank");
+
+  if (!ventana) {
+    alert("Permití las ventanas emergentes para imprimir.");
+    return;
+  }
+
+  const imagen = grafica.toDataURL("image/png");
+
+  ventana.document.open();
+
+  ventana.document.write(`
+    <!DOCTYPE html>
+    <html lang="es">
+    <head>
+      <meta charset="UTF-8">
+      <title>Informe de Estadística</title>
+
+      <style>
+        @page {
+          size: A4;
+          margin: 18mm;
+        }
+
+        body {
+          font-family: Arial, sans-serif;
+          color: #19384d;
+          margin: 0;
+          line-height: 1.5;
+        }
+
+        header {
+          background: #284967;
+          color: white;
+          padding: 20px;
+          border-bottom: 5px solid #f2d36b;
+        }
+
+        h1 {
+          font-size: 23px;
+          margin: 0;
+        }
+
+        h2 {
+          color: #245b72;
+          font-size: 17px;
+          border-left: 4px solid #284967;
+          padding-left: 12px;
+          margin-top: 25px;
+        }
+
+        section {
+          margin: 20px 0;
+          break-inside: avoid;
+        }
+
+        .ecuacion {
+          display: block;
+          text-align: center;
+          padding: 12px 0;
+          min-height: 35px;
+        }
+
+        mjx-container[display="true"] {
+          display: block !important;
+          margin: 0.5em 0 !important;
+        }
+
+        .grafica {
+          width: 100%;
+          max-width: 650px;
+          display: block;
+          margin: 20px auto;
+        }
+
+        .resultado {
+          background: #d9f4e7;
+          padding: 18px;
+          border-radius: 8px;
+          font-weight: bold;
+        }
+
+        @media print {
+          body {
+            print-color-adjust: exact;
+            -webkit-print-color-adjust: exact;
+          }
+        }
+      </style>
+
+      <script>
+        window.MathJax = {
+          tex: {
+            inlineMath: [['\\\\(', '\\\\)']],
+            displayMath: [['\\\\[', '\\\\]']]
+          },
+          startup: {
+            typeset: true
+          }
+        };
+      <\/script>
+
+      <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"><\/script>
+    </head>
+
+    <body>
+      <header>
+        <h1>Informe de cálculo</h1>
+        Distribución normal y distribución de muestreo
+      </header>
+
+      <img class="grafica" src="${imagen}">
+
+      ${secciones.join("")}
+
+    </body>
+    </html>
+  `);
+
+  ventana.document.close();
+
+  // Esperar a que las fórmulas estén completamente listas.
+  ventana.addEventListener("load", async () => {
+    try {
+      if (ventana.MathJax?.startup?.promise) {
+        await ventana.MathJax.startup.promise;
+      }
+      await ventana.document.fonts.ready;
+      ventana.focus();
+      ventana.print();
+    } catch (error) {
+      console.error(error);
+      ventana.focus();
+      ventana.print();
+    }
+  });
+}
+</script>
+
+<script src="exportar_excel.js"></script>
 </body>
 </html>
