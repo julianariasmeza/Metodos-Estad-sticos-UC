@@ -78,6 +78,10 @@ async function calcularDistribucionDiscreta(registrar = true) {
     html += "\\[P(X=k)=\\frac{e^{-\\lambda}\\lambda^k}{k!}\\]";
   }
 
+  html += generarSustitucionDiscreta(
+    tipo, modo, a, b, n, p, lambda
+  );
+
   html += "</div>";
 
   html += "<div class='paso'><h3>3. Probabilidad</h3>";

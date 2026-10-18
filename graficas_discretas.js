@@ -1,9 +1,15 @@
 function dibujarDistribucionDiscreta(tipo, modo, a, b, n, p, lambda) {
   const canvas = document.getElementById("graficaCalculadora");
-  const ctx = canvas.getContext("2d");
-  const W = canvas.width;
-  const H = canvas.height;
+  // Mismo sistema de coordenadas que la campana normal.
+  const W = 800;
+  const H = 360;
+  const escala = 2;
 
+  canvas.width = W * escala;
+  canvas.height = H * escala;
+
+  const ctx = canvas.getContext("2d");
+  ctx.setTransform(escala, 0, 0, escala, 0, 0);
   ctx.clearRect(0, 0, W, H);
 
   const esBinomial = tipo === "binomial";
@@ -40,10 +46,10 @@ function dibujarDistribucionDiscreta(tipo, modo, a, b, n, p, lambda) {
 
   const maxProb = Math.max(...valores.map(v => v.prob), 0.01);
 
-  const izquierda = 110;
-  const derecha = W - 70;
-  const arriba = 100;
-  const abajo = H - 110;
+  const izquierda = 65;
+  const derecha = W - 45;
+  const arriba = 65;
+  const abajo = H - 65;
 
   const ancho = (derecha - izquierda) / valores.length;
   const alturaUtil = abajo - arriba;
@@ -52,11 +58,11 @@ function dibujarDistribucionDiscreta(tipo, modo, a, b, n, p, lambda) {
   ctx.fillRect(0, 0, W, H);
 
   ctx.fillStyle = "#172b4d";
-  ctx.font = "bold 34px Arial";
+  ctx.font = "bold 23px Arial";
   ctx.textAlign = "center";
   ctx.fillText(
     esBinomial ? "Distribución binomial" : "Distribución de Poisson",
-    W / 2, 55
+    W / 2, 35
   );
 
   ctx.strokeStyle = "#333";
@@ -87,25 +93,25 @@ function dibujarDistribucionDiscreta(tipo, modo, a, b, n, p, lambda) {
 
     if (valores.length <= 35 || i % 5 === 0) {
       ctx.fillStyle = "#333";
-      ctx.font = "18px Arial";
+      ctx.font = "13px Arial";
       ctx.textAlign = "center";
       ctx.fillText(
         String(k),
         x + ancho * 0.38,
-        abajo + 30
+        abajo + 20
       );
     }
   });
 
-  ctx.font = "23px Arial";
+  ctx.font = "15px Arial";
   ctx.textAlign = "center";
   ctx.fillStyle = "#333";
-  ctx.fillText("Número de ocurrencias (k)", W / 2, H - 35);
+  ctx.fillText("Número de ocurrencias (k)", W / 2, H - 15);
 
   ctx.fillStyle = "#e67e22";
-  ctx.fillRect(W - 380, 70, 22, 22);
+  ctx.fillRect(W - 220, 47, 14, 14);
   ctx.fillStyle = "#333";
-  ctx.font = "21px Arial";
+  ctx.font = "13px Arial";
   ctx.textAlign = "left";
-  ctx.fillText("Probabilidad solicitada", W - 345, 89);
+  ctx.fillText("Probabilidad solicitada", W - 200, 59);
 }

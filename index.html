@@ -224,8 +224,8 @@ button.claro:hover:not(:disabled) {
 }
 
 canvas {
-  width: 100%;
-  max-width: 800px;
+  width: 800px;
+  max-width: 100%;
   aspect-ratio: 800 / 360;
   height: auto;
   border: 1px solid #d5e4e8;
@@ -796,6 +796,13 @@ procedimiento completo en PDF.
 <input type="text" id="estudiante" placeholder="Ej.: Ana Rodríguez" autocomplete="name">
 </div>
 
+</div>
+
+<div id="formulasDistribucion"
+     style="margin:20px 0; padding:18px; border:1px solid #d1d5db; border-radius:12px;">
+  <strong>Fórmulas de la distribución</strong>
+  <div id="contenidoFormulas" style="margin-top:12px;">
+  </div>
 </div>
 
 <div class="acciones no-imprimir">
@@ -2043,11 +2050,11 @@ function imprimirInformeLimpio() {
 
       ${secciones.join("")}
 
-    <script src="distribuciones.js"></script>
-<script src="interfaz_discretas.js"></script>
-<script src="graficas_discretas.js"></script>
-<script src="aproximaciones.js"></script>
-<script src="interfaz_aproximaciones.js"></script>
+    
+
+
+
+
 </body>
     </html>
   `);
@@ -2072,8 +2079,15 @@ function imprimirInformeLimpio() {
 }
 </script>
 
+<script src="distribuciones.js"></script>
+<script src="interfaz_discretas.js"></script>
+<script src="graficas_discretas.js"></script>
+<script src="aproximaciones.js"></script>
+<script src="interfaz_aproximaciones.js"></script>
 <script src="graficas_excel.js"></script>
 <script src="formulas_excel.js"></script>
 <script src="exportar_excel.js"></script>
+<script src="formulas_distribuciones.js"></script>
+<script src="sustitucion_discretas.js"></script>
 </body>
 </html>
