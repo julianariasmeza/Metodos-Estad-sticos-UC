@@ -447,6 +447,7 @@ src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js">
 </script>
 
 <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 </head>
 
 <body>
@@ -737,6 +738,10 @@ procedimiento completo en PDF.
 <select id="tipo" onchange="cambiarTipo()">
   <option value="normal">Distribución normal</option>
   <option value="muestreo">Distribución de muestreo</option>
+  <option value="binomial">Distribución binomial</option>
+  <option value="poisson">Distribución de Poisson</option>
+  <option value="normal_binomial">Aproximación normal a binomial</option>
+  <option value="normal_poisson">Aproximación normal a Poisson</option>
 </select>
 </div>
 
@@ -767,6 +772,18 @@ procedimiento completo en PDF.
 <div id="campoB" style="display:none">
 <label for="limiteB">Límite b</label>
 <input type="number" id="limiteB" value="15" step="any" inputmode="decimal">
+</div>
+
+<div id="campoP" style="display:none">
+  <label for="probExito">Probabilidad de éxito (p)</label>
+  <input type="number" id="probExito" value="0.4"
+         min="0" max="1" step="any">
+</div>
+
+<div id="campoLambda" style="display:none">
+  <label for="lambda">Media de Poisson (λ)</label>
+  <input type="number" id="lambda" value="4"
+         min="0" step="any">
 </div>
 
 <div id="campoN" style="display:none">
@@ -1230,23 +1247,79 @@ function mostrarCampos() {
   const tipo = document.getElementById("tipo").value;
   const modo = document.getElementById("probabilidad").value;
 
+  const discreta = [
+    "binomial", "poisson",
+    "normal_binomial", "normal_poisson"
+  ].includes(tipo);
+
+  const usaN = [
+    "muestreo", "binomial", "normal_binomial"
+  ].includes(tipo);
+
+  const usaP = [
+    "binomial", "normal_binomial"
+  ].includes(tipo);
+
+  const usaLambda = [
+    "poisson", "normal_poisson"
+  ].includes(tipo);
+
   document.getElementById("campoN").style.display =
-    tipo === "muestreo" ? "block" : "none";
+    usaN ? "block" : "none";
+
+  document.getElementById("campoP").style.display =
+    usaP ? "block" : "none";
+
+  document.getElementById("campoLambda").style.display =
+    usaLambda ? "block" : "none";
+
+  document.getElementById("media").parentElement.style.display =
+    discreta ? "none" : "block";
+
+  document.getElementById("desviacion").parentElement.style.display =
+    discreta ? "none" : "block";
 
   document.getElementById("campoB").style.display =
     modo === "entre" ? "block" : "none";
+
+  document.querySelector('label[for="muestra"]').textContent =
+    tipo === "muestreo"
+      ? "Tamaño de muestra (n)"
+      : "Número de ensayos (n)";
+
+  document.querySelector('label[for="limite"]').textContent =
+    discreta ? "Valor k o límite a" : "Límite a";
+
+  const selector = document.getElementById("probabilidad");
+  let exacta = selector.querySelector('option[value="exacta"]');
+
+  if (discreta && !exacta) {
+    exacta = document.createElement("option");
+    exacta.value = "exacta";
+    exacta.textContent = "P(X = k)";
+    selector.insertBefore(exacta, selector.firstChild);
+  }
+
+  if (!discreta && exacta) {
+    if (selector.value === "exacta") selector.value = "menor";
+    exacta.remove();
+  }
+
+  document.getElementById("campoB").style.display =
+    selector.value === "entre" ? "block" : "none";
 }
 
-// Al cambiar el tipo se cargan los datos del ejemplo correspondiente
 function cambiarTipo() {
   const tipo = document.getElementById("tipo").value;
   const e = EJEMPLOS[tipo];
 
-  document.getElementById("media").value = e.media;
-  document.getElementById("desviacion").value = e.sigma;
-  document.getElementById("limite").value = e.a;
-  document.getElementById("limiteB").value = e.b;
-  document.getElementById("muestra").value = e.n;
+  if (e) {
+    document.getElementById("media").value = e.media;
+    document.getElementById("desviacion").value = e.sigma;
+    document.getElementById("limite").value = e.a;
+    document.getElementById("limiteB").value = e.b;
+    document.getElementById("muestra").value = e.n;
+  }
 
   mostrarCampos();
 }
@@ -1291,6 +1364,18 @@ function limpiarHistorial() {
 }
 
 async function calcular(registrar = true) {
+  const tipoSeleccionado = document.getElementById("tipo").value;
+
+  if (tipoSeleccionado === "binomial" ||
+      tipoSeleccionado === "poisson") {
+    return calcularDistribucionDiscreta(registrar);
+  }
+
+  if (tipoSeleccionado === "normal_binomial" ||
+      tipoSeleccionado === "normal_poisson") {
+    return calcularDistribucionAproximada(registrar);
+  }
+
 
   const tipo = document.getElementById("tipo").value;
   const modo = document.getElementById("probabilidad").value;
@@ -1958,7 +2043,12 @@ function imprimirInformeLimpio() {
 
       ${secciones.join("")}
 
-    </body>
+    <script src="distribuciones.js"></script>
+<script src="interfaz_discretas.js"></script>
+<script src="graficas_discretas.js"></script>
+<script src="aproximaciones.js"></script>
+<script src="interfaz_aproximaciones.js"></script>
+</body>
     </html>
   `);
 
@@ -1982,6 +2072,8 @@ function imprimirInformeLimpio() {
 }
 </script>
 
+<script src="graficas_excel.js"></script>
+<script src="formulas_excel.js"></script>
 <script src="exportar_excel.js"></script>
 </body>
 </html>
